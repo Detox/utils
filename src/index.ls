@@ -9,7 +9,7 @@ if typeof crypto != 'undefined'
 	 *
 	 * @return {!Uint8Array}
 	 */
-	randombytes	= (size) ->
+	random_bytes	= (size) ->
 		array = new Uint8Array(size)
 		crypto.getRandomValues(array)
 		array
@@ -19,7 +19,7 @@ else
 	 *
 	 * @return {!Uint8Array}
 	 */
-	randombytes	= require('crypto').randomBytes
+	random_bytes	= require('crypto').randomBytes
 /**
  * @param {number} min
  * @param {number} max
@@ -27,7 +27,7 @@ else
  * @return {number}
  */
 function random_int (min, max)
-	bytes			= randombytes(4)
+	bytes			= random_bytes(4)
 	uint32_number	= (new Uint32Array(bytes.buffer))[0]
 	Math.floor(uint32_number / 2**32 * (max - min + 1)) + min
 /**
@@ -146,7 +146,7 @@ function error_handler (error)
 
 function Wrapper
 	{
-		'randombytes'					: randombytes
+		'random_bytes'					: random_bytes
 		'random_int'					: random_int
 		'pull_random_item_from_array'	: pull_random_item_from_array
 		'array2hex'						: array2hex

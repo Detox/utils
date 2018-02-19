@@ -5,14 +5,14 @@
  * @license 0BSD
  */
 (function(){
-  var randombytes, string2array, array2string;
+  var random_bytes, string2array, array2string;
   if (typeof crypto !== 'undefined') {
     /**
      * @param {number} size
      *
      * @return {!Uint8Array}
      */
-    randombytes = function(size){
+    random_bytes = function(size){
       var array;
       array = new Uint8Array(size);
       crypto.getRandomValues(array);
@@ -24,7 +24,7 @@
      *
      * @return {!Uint8Array}
      */
-    randombytes = require('crypto').randomBytes;
+    random_bytes = require('crypto').randomBytes;
   }
   /**
    * @param {number} min
@@ -34,7 +34,7 @@
    */
   function random_int(min, max){
     var bytes, uint32_number;
-    bytes = randombytes(4);
+    bytes = random_bytes(4);
     uint32_number = new Uint32Array(bytes.buffer)[0];
     return Math.floor(uint32_number / Math.pow(2, 32) * (max - min + 1)) + min;
   }
@@ -176,7 +176,7 @@
   }
   function Wrapper(){
     return {
-      'randombytes': randombytes,
+      'random_bytes': random_bytes,
       'random_int': random_int,
       'pull_random_item_from_array': pull_random_item_from_array,
       'array2hex': array2hex,
