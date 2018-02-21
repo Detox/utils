@@ -30,9 +30,8 @@ requirejs(['@detox/utils'], function (detox_utils) {
 * `hex2array()`
 * `string2array()`
 * `array2string()`
-* `is_string_equal_to_array()`
+* `are_arrays_equal()`
 * `concat_arrays()`
-* `compute_source_id()`
 * `timeoutSet()`
 * `intervalSet()`
 * `error_handler()`

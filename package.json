@@ -5,7 +5,7 @@
 		"detox",
 		"utils"
 	],
-	"version"         : "1.1.1",
+	"version"         : "1.2.0",
 	"homepage"        : "https://github.com/Detox/utils",
 	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
 	"repository"      : {

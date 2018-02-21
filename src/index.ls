@@ -97,13 +97,20 @@ else let encoder = new TextEncoder(), decoder = new TextDecoder()
 	array2string := (array) ->
 		decoder.decode(array)
 /**
- * @param {string}		string
- * @param {!Uint8Array}	array
+ * @param {!Uint8Array}	array1
+ * @param {!Uint8Array}	array2
  *
  * @return {boolean}
  */
-function is_string_equal_to_array (string, array)
-	string == array.join(',')
+function are_arrays_equal (array1, array2)
+	if array1 == array2
+		return true
+	if array1.length != array2.length
+		return false
+	for item, key in array1
+		if item != array2[key]
+			return false
+	true
 /**
  * @param {!Array<!Uint8Array>} arrays
  *
@@ -121,14 +128,6 @@ function concat_arrays (arrays)
 		result.set(array, current_offset)
 		current_offset	+= array.length
 	result
-/**
- * @param {!Uint8Array}	address
- * @param {!Uint8Array}	segment_id
- *
- * @return {string}
- */
-function compute_source_id (address, segment_id)
-	address.join(',') + segment_id.join(',')
 /**
  * Changed order of arguments and delay in seconds for convenience
  */
@@ -235,9 +234,8 @@ function Wrapper
 		'hex2array'						: hex2array
 		'string2array'					: string2array
 		'array2string'					: array2string
-		'is_string_equal_to_array'		: is_string_equal_to_array
+		'are_arrays_equal'				: are_arrays_equal
 		'concat_arrays'					: concat_arrays
-		'compute_source_id'				: compute_source_id
 		'timeoutSet'					: timeoutSet
 		'intervalSet'					: intervalSet
 		'error_handler'					: error_handler

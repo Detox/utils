@@ -9,8 +9,8 @@
   lib = require('..');
   test = require('tape');
   test('Utils', function(t){
-    var random1, random2, random_int1, random_int2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, computed_source, map, u8_1, u8_2, x, y, i1;
-    t.plan(23);
+    var random1, random2, random_int1, random_int2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, map, u8_1, u8_2, x, y, i1;
+    t.plan(22);
     random1 = lib.random_bytes(10);
     random2 = lib.random_bytes(10);
     t.ok(random1 instanceof Uint8Array, 'Random bytes are in Uint8Array');
@@ -30,8 +30,8 @@
     string_array = Uint8Array.of(72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 32, 240, 159, 152, 138);
     t.equal(lib.string2array(string).join(','), string_array.join(','), 'String to Uint8Array converted correctly');
     t.equal(lib.array2string(string_array), string, 'Uint8Array to string converted correctly');
-    t.ok(lib.is_string_equal_to_array(hex_array.join(','), hex_array), 'String to Uint8Array comparison succeeded');
-    t.notOk(lib.is_string_equal_to_array(hex_array.join(','), string_array), 'String to Uint8Array comparison failed');
+    t.ok(lib.are_arrays_equal(Uint8Array.from(hex_array), hex_array), 'Arrays are equal');
+    t.notOk(lib.are_arrays_equal(hex_array, string_array), 'Arrays are not equal');
     array1 = Uint8Array.of(1, 2);
     array2 = Uint8Array.of(3, 4);
     arrays_result = Uint8Array.of(1, 2, 3, 4);
@@ -39,16 +39,14 @@
     t.equal(concatenated.length, 4, 'Concatenated array has expected length');
     t.ok(concatenated instanceof Uint8Array, 'Concatenated array is Uint8Array');
     t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents');
-    computed_source = lib.compute_source_id(array1, array2);
-    t.equal(computed_source, '1,23,4', 'Source id computed correctly');
     map = new lib.ArrayMap;
     u8_1 = Uint8Array.of(1, 2, 3);
     u8_2 = Uint8Array.of(1, 2, 3);
-    t.equal(map.size, 0, 'U8Map empty initially');
-    t.notOk(map.has(u8_1), "U8Map doesn't have array initially");
+    t.equal(map.size, 0, 'ArrayMap empty initially');
+    t.notOk(map.has(u8_1), "ArrayMap doesn't have array initially");
     map.set(u8_1, u8_1);
-    t.ok(map.has(u8_1), 'U8Map has item after addition');
-    t.ok(map.has(u8_2), 'U8Map has item that is a different array, but with the same contents');
+    t.ok(map.has(u8_1), 'ArrayMap has item after addition');
+    t.ok(map.has(u8_2), 'ArrayMap has item that is a different array, but with the same contents');
     x = 0;
     lib.timeoutSet(0.001, function(){
       ++x;
