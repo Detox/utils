@@ -224,6 +224,30 @@ function ArrayMap
 		..clear = !->
 			@forEach (, key) !~>
 				@delete(key)
+# LiveScript doesn't support classes, so we do it in ugly way
+function ArraySet
+	/**
+	 * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
+	 *
+	 * Implementation keeps weak references to make the whole thing fast and efficient
+	 */
+	new Set
+		..has	= (key) ->
+			key	= get_unique_key(key)
+			Set::has.call(@, key)
+		..add = (key) ->
+			key	= get_unique_key(key)
+			if !Set::has.call(@, key)
+				increase_key_usage(key)
+			Set::add.call(@, key)
+		..delete = (key) ->
+			key	= get_unique_key(key)
+			if Set::has.call(@, key)
+				decrease_key_usage(key)
+			Set::delete.call(@, key)
+		..clear = !->
+			@forEach (, key) !~>
+				@delete(key)
 
 function Wrapper
 	{
@@ -240,6 +264,7 @@ function Wrapper
 		'intervalSet'					: intervalSet
 		'error_handler'					: error_handler
 		'ArrayMap'						: ArrayMap
+		'ArraySet'						: ArraySet
 	}
 
 if typeof define == 'function' && define['amd']

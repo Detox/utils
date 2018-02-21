@@ -36,6 +36,7 @@ requirejs(['@detox/utils'], function (detox_utils) {
 * `intervalSet()`
 * `error_handler()`
 * `ArrayMap()`
+* `ArraySet()`
 
 Look at source code and tests for details and usage examples.
 

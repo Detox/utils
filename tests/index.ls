@@ -7,7 +7,7 @@ lib		= require('..')
 test	= require('tape')
 
 test('Utils', (t) !->
-	t.plan(22)
+	t.plan(26)
 
 	random1 = lib.random_bytes(10)
 	random2 = lib.random_bytes(10)
@@ -52,6 +52,13 @@ test('Utils', (t) !->
 	map.set(u8_1, u8_1)
 	t.ok(map.has(u8_1), 'ArrayMap has item after addition')
 	t.ok(map.has(u8_2), 'ArrayMap has item that is a different array, but with the same contents')
+
+	set	= new lib.ArraySet
+	t.equal(set.size, 0, 'ArraySet empty initially')
+	t.notOk(set.has(u8_1), "ArraySet doesn't have array initially")
+	set.add(u8_1)
+	t.ok(set.has(u8_1), 'ArraySet has item after addition')
+	t.ok(set.has(u8_2), 'ArraySet has item that is a different array, but with the same contents')
 
 	x = 0
 	lib.timeoutSet(0.001, !->

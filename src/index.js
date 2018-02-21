@@ -277,6 +277,40 @@
     };
     return x$;
   }
+  function ArraySet(){
+    /**
+     * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
+     *
+     * Implementation keeps weak references to make the whole thing fast and efficient
+     */
+    var x$;
+    x$ = new Set;
+    x$.has = function(key){
+      key = get_unique_key(key);
+      return Set.prototype.has.call(this, key);
+    };
+    x$.add = function(key){
+      key = get_unique_key(key);
+      if (!Set.prototype.has.call(this, key)) {
+        increase_key_usage(key);
+      }
+      return Set.prototype.add.call(this, key);
+    };
+    x$['delete'] = function(key){
+      key = get_unique_key(key);
+      if (Set.prototype.has.call(this, key)) {
+        decrease_key_usage(key);
+      }
+      return Set.prototype['delete'].call(this, key);
+    };
+    x$.clear = function(){
+      var this$ = this;
+      this.forEach(function(arg$, key){
+        this$['delete'](key);
+      });
+    };
+    return x$;
+  }
   function Wrapper(){
     return {
       'random_bytes': random_bytes,
@@ -291,7 +325,8 @@
       'timeoutSet': timeoutSet,
       'intervalSet': intervalSet,
       'error_handler': error_handler,
-      'ArrayMap': ArrayMap
+      'ArrayMap': ArrayMap,
+      'ArraySet': ArraySet
     };
   }
   if (typeof define === 'function' && define['amd']) {

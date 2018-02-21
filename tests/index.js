@@ -9,8 +9,8 @@
   lib = require('..');
   test = require('tape');
   test('Utils', function(t){
-    var random1, random2, random_int1, random_int2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, map, u8_1, u8_2, x, y, i1;
-    t.plan(22);
+    var random1, random2, random_int1, random_int2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, map, u8_1, u8_2, set, x, y, i1;
+    t.plan(26);
     random1 = lib.random_bytes(10);
     random2 = lib.random_bytes(10);
     t.ok(random1 instanceof Uint8Array, 'Random bytes are in Uint8Array');
@@ -47,6 +47,12 @@
     map.set(u8_1, u8_1);
     t.ok(map.has(u8_1), 'ArrayMap has item after addition');
     t.ok(map.has(u8_2), 'ArrayMap has item that is a different array, but with the same contents');
+    set = new lib.ArraySet;
+    t.equal(set.size, 0, 'ArraySet empty initially');
+    t.notOk(set.has(u8_1), "ArraySet doesn't have array initially");
+    set.add(u8_1);
+    t.ok(set.has(u8_1), 'ArraySet has item after addition');
+    t.ok(set.has(u8_2), 'ArraySet has item that is a different array, but with the same contents');
     x = 0;
     lib.timeoutSet(0.001, function(){
       ++x;
