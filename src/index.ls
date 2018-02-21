@@ -192,14 +192,14 @@ function get_unique_key (key)
 	current_value	= key_usages.get(key)
 	--current_value
 	# When last usage was eliminated, clean string alias and usages, WeakMap will clean itself over time or upon request (we can't enumerate its keys ourselves)
-	if !current_offset
+	if !current_value
 		key_strings.delete(key_string)
 		key_usages.delete(key)
 	else
 		key_usages.set(key, current_value)
 
 # LiveScript doesn't support classes, so we do it in ugly way
-function U8Map
+function ArrayMap
 	/**
 	 * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
 	 *
@@ -226,10 +226,6 @@ function U8Map
 			@forEach (, key) !~>
 				@delete(key)
 
-U8Map:: = Object.create(Map::)
-
-Object.defineProperty(U8Map::, 'constructor', {enumerable: false, value: U8Map})
-
 function Wrapper
 	{
 		'random_bytes'					: random_bytes
@@ -245,7 +241,7 @@ function Wrapper
 		'timeoutSet'					: timeoutSet
 		'intervalSet'					: intervalSet
 		'error_handler'					: error_handler
-		'U8Map'							: U8Map
+		'ArrayMap'						: ArrayMap
 	}
 
 if typeof define == 'function' && define['amd']

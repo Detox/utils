@@ -41,7 +41,7 @@
     t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents');
     computed_source = lib.compute_source_id(array1, array2);
     t.equal(computed_source, '1,23,4', 'Source id computed correctly');
-    map = new lib.U8Map;
+    map = new lib.ArrayMap;
     u8_1 = Uint8Array.of(1, 2, 3);
     u8_2 = Uint8Array.of(1, 2, 3);
     t.equal(map.size, 0, 'U8Map empty initially');

@@ -227,14 +227,14 @@
     key_string = key.join(',');
     current_value = key_usages.get(key);
     --current_value;
-    if (!current_offset) {
+    if (!current_value) {
       key_strings['delete'](key_string);
       key_usages['delete'](key);
     } else {
       key_usages.set(key, current_value);
     }
   }
-  function U8Map(){
+  function ArrayMap(){
     /**
      * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
      *
@@ -272,11 +272,6 @@
     };
     return x$;
   }
-  U8Map.prototype = Object.create(Map.prototype);
-  Object.defineProperty(U8Map.prototype, 'constructor', {
-    enumerable: false,
-    value: U8Map
-  });
   function Wrapper(){
     return {
       'random_bytes': random_bytes,
@@ -292,7 +287,7 @@
       'timeoutSet': timeoutSet,
       'intervalSet': intervalSet,
       'error_handler': error_handler,
-      'U8Map': U8Map
+      'ArrayMap': ArrayMap
     };
   }
   if (typeof define === 'function' && define['amd']) {
