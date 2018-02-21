@@ -5,7 +5,7 @@
  * @license 0BSD
  */
 (function(){
-  var random_bytes, string2array, array2string;
+  var random_bytes, string2array, array2string, key_aliases, key_strings, key_usages;
   if (typeof crypto !== 'undefined') {
     /**
      * @param {number} size
@@ -174,6 +174,109 @@
       return console.error(error);
     }
   }
+  key_aliases = new WeakMap;
+  key_strings = new Map;
+  key_usages = new Map;
+  /**
+   * @param {!Uint8Array} key
+   *
+   * @return {!Uint8Array}
+   */
+  function get_unique_key(key){
+    var real_key, key_string;
+    real_key = key_aliases.get(key);
+    /**
+     * Real key is an array with unique contents that appeared first.
+     * If all of the usages were eliminated, some WeakMap can still point to old real key, which is not a real key anymore, which leads to inconsistencies.
+     * In order to resolve this we have an additional check that confirms if real key is still believed to be a real key.
+     */
+    if (real_key && key_usages.has(real_key)) {
+      return real_key;
+    } else {
+      key_string = key.join(',');
+      if (key_strings.has(key_string)) {
+        real_key = key_strings.get(key_string);
+        key_aliases.set(key, real_key);
+        return real_key;
+      } else {
+        return key;
+      }
+    }
+  }
+  /**
+   * @param {!Uint8Array} key
+   */
+  function increase_key_usage(key){
+    var key_string, current_value;
+    key_string = key.join(',');
+    current_value = key_usages.get(key);
+    if (!current_value) {
+      key_aliases.set(key, key);
+      key_strings.set(key_string, key);
+      key_usages.set(key, 1);
+    } else {
+      ++current_value;
+      key_usages.set(key, current_value);
+    }
+  }
+  /**
+   * @param {!Uint8Array} key
+   */
+  function decrease_key_usage(key){
+    var key_string, current_value;
+    key_string = key.join(',');
+    current_value = key_usages.get(key);
+    --current_value;
+    if (!current_offset) {
+      key_strings['delete'](key_string);
+      key_usages['delete'](key);
+    } else {
+      key_usages.set(key, current_value);
+    }
+  }
+  function U8Map(){
+    /**
+     * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
+     *
+     * Implementation keeps weak references to make the whole thing fast and efficient
+     */
+    var x$;
+    x$ = new Map;
+    x$.get = function(key){
+      key = get_unique_key(key);
+      return Map.prototype.get.call(this, key);
+    };
+    x$.has = function(key){
+      key = get_unique_key(key);
+      return Map.prototype.has.call(this, key);
+    };
+    x$.set = function(key, value){
+      key = get_unique_key(key);
+      if (!Map.prototype.has.call(this, key)) {
+        increase_key_usage(key);
+      }
+      return Map.prototype.set.call(this, key, value);
+    };
+    x$['delete'] = function(key){
+      key = get_unique_key(key);
+      if (Map.prototype.has.call(this, key)) {
+        decrease_key_usage(key);
+      }
+      return Map.prototype['delete'].call(this, key);
+    };
+    x$.clear = function(){
+      var this$ = this;
+      this.forEach(function(arg$, key){
+        this$['delete'](key);
+      });
+    };
+    return x$;
+  }
+  U8Map.prototype = Object.create(Map.prototype);
+  Object.defineProperty(U8Map.prototype, 'constructor', {
+    enumerable: false,
+    value: U8Map
+  });
   function Wrapper(){
     return {
       'random_bytes': random_bytes,
@@ -188,7 +291,8 @@
       'compute_source_id': compute_source_id,
       'timeoutSet': timeoutSet,
       'intervalSet': intervalSet,
-      'error_handler': error_handler
+      'error_handler': error_handler,
+      'U8Map': U8Map
     };
   }
   if (typeof define === 'function' && define['amd']) {

@@ -36,6 +36,7 @@ requirejs(['@detox/utils'], function (detox_utils) {
 * `timeoutSet()`
 * `intervalSet()`
 * `error_handler()`
+* `U8Map()`
 
 Look at source code and tests for details and usage examples.
 

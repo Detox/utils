@@ -7,7 +7,7 @@ lib		= require('..')
 test	= require('tape')
 
 test('Utils', (t) !->
-	t.plan(19)
+	t.plan(23)
 
 	random1 = lib.random_bytes(10)
 	random2 = lib.random_bytes(10)
@@ -46,6 +46,15 @@ test('Utils', (t) !->
 
 	computed_source	= lib.compute_source_id(array1, array2)
 	t.equal(computed_source, '1,23,4', 'Source id computed correctly')
+
+	map		= new lib.U8Map
+	u8_1	= Uint8Array.of(1, 2, 3)
+	u8_2	= Uint8Array.of(1, 2, 3)
+	t.equal(map.size, 0, 'U8Map empty initially')
+	t.notOk(map.has(u8_1), "U8Map doesn't have array initially")
+	map.set(u8_1, u8_1)
+	t.ok(map.has(u8_1), 'U8Map has item after addition')
+	t.ok(map.has(u8_2), 'U8Map has item that is a different array, but with the same contents')
 
 	x = 0
 	lib.timeoutSet(0.001, !->
