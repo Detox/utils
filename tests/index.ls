@@ -44,7 +44,7 @@ test('Utils', (t) !->
 	t.ok(concatenated instanceof Uint8Array, 'Concatenated array is Uint8Array')
 	t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents')
 
-	map		= new lib.ArrayMap
+	map		= lib.ArrayMap()
 	u8_1	= Uint8Array.of(1, 2, 3)
 	u8_2	= Uint8Array.of(1, 2, 3)
 	t.equal(map.size, 0, 'ArrayMap empty initially')
@@ -53,7 +53,7 @@ test('Utils', (t) !->
 	t.ok(map.has(u8_1), 'ArrayMap has item after addition')
 	t.ok(map.has(u8_2), 'ArrayMap has item that is a different array, but with the same contents')
 
-	set	= new lib.ArraySet
+	set	= lib.ArraySet()
 	t.equal(set.size, 0, 'ArraySet empty initially')
 	t.notOk(set.has(u8_1), "ArraySet doesn't have array initially")
 	set.add(u8_1)
