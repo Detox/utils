@@ -225,13 +225,13 @@ function ArrayMap
 			@forEach (, key) !~>
 				@delete(key)
 # LiveScript doesn't support classes, so we do it in ugly way
-function ArraySet
+function ArraySet (array)
 	/**
 	 * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
 	 *
 	 * Implementation keeps weak references to make the whole thing fast and efficient
 	 */
-	new Set
+	set	= new Set
 		..has	= (key) ->
 			key	= get_unique_key(key)
 			Set::has.call(@, key)
@@ -248,6 +248,10 @@ function ArraySet
 		..clear = !->
 			@forEach (, key) !~>
 				@delete(key)
+	if array
+		for item in array
+			set.add(item)
+	set
 
 function Wrapper
 	{

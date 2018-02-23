@@ -277,14 +277,14 @@
     };
     return x$;
   }
-  function ArraySet(){
+  function ArraySet(array){
     /**
      * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
      *
      * Implementation keeps weak references to make the whole thing fast and efficient
      */
-    var x$;
-    x$ = new Set;
+    var x$, set, i$, len$, item;
+    x$ = set = new Set;
     x$.has = function(key){
       key = get_unique_key(key);
       return Set.prototype.has.call(this, key);
@@ -309,7 +309,13 @@
         this$['delete'](key);
       });
     };
-    return x$;
+    if (array) {
+      for (i$ = 0, len$ = array.length; i$ < len$; ++i$) {
+        item = array[i$];
+        set.add(item);
+      }
+    }
+    return set;
   }
   function Wrapper(){
     return {
