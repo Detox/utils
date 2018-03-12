@@ -239,12 +239,12 @@
       key_usages.set(key, current_value);
     }
   }
+  /**
+   * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
+   *
+   * Implementation keeps weak references to make the whole thing fast and efficient
+   */
   function ArrayMap(){
-    /**
-     * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
-     *
-     * Implementation keeps weak references to make the whole thing fast and efficient
-     */
     var x$;
     x$ = new Map;
     x$.get = function(key){
@@ -277,12 +277,12 @@
     };
     return x$;
   }
+  /**
+   * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
+   *
+   * Implementation keeps weak references to make the whole thing fast and efficient
+   */
   function ArraySet(array){
-    /**
-     * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
-     *
-     * Implementation keeps weak references to make the whole thing fast and efficient
-     */
     var x$, set, i$, len$, item;
     x$ = set = new Set;
     x$.has = function(key){
@@ -317,7 +317,9 @@
     }
     return set;
   }
-  function Wrapper(){
+  function Wrapper(detoxBaseX){
+    var base58;
+    base58 = detoxBaseX('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
     return {
       'random_bytes': random_bytes,
       'random_int': random_int,
@@ -332,14 +334,16 @@
       'intervalSet': intervalSet,
       'error_handler': error_handler,
       'ArrayMap': ArrayMap,
-      'ArraySet': ArraySet
+      'ArraySet': ArraySet,
+      'base58_encode': base58['encode'],
+      'base58_decode': base58['decode']
     };
   }
   if (typeof define === 'function' && define['amd']) {
-    define(Wrapper);
+    define(['@detox/base-x'], Wrapper);
   } else if (typeof exports === 'object') {
-    module.exports = Wrapper();
+    module.exports = Wrapper(require('@detox/base-x'));
   } else {
-    this['detox_utils'] = Wrapper();
+    this['detox_utils'] = Wrapper(this['base_x']);
   }
 }).call(this);

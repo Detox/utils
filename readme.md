@@ -37,6 +37,8 @@ requirejs(['@detox/utils'], function (detox_utils) {
 * `error_handler()`
 * `ArrayMap()`
 * `ArraySet()`
+* `base58_encode()`
+* `base58_decode()`
 
 Look at source code and tests for details and usage examples.
 

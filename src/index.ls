@@ -198,12 +198,12 @@ function get_unique_key (key)
 		key_usages.set(key, current_value)
 
 # LiveScript doesn't support classes, so we do it in ugly way
+/**
+ * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
+ *
+ * Implementation keeps weak references to make the whole thing fast and efficient
+ */
 function ArrayMap
-	/**
-	 * This is a Map with very interesting property: different arrays with the same contents will be treated as the same array
-	 *
-	 * Implementation keeps weak references to make the whole thing fast and efficient
-	 */
 	new Map
 		..get = (key) ->
 			key	= get_unique_key(key)
@@ -225,12 +225,12 @@ function ArrayMap
 			@forEach (, key) !~>
 				@delete(key)
 # LiveScript doesn't support classes, so we do it in ugly way
+/**
+ * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
+ *
+ * Implementation keeps weak references to make the whole thing fast and efficient
+ */
 function ArraySet (array)
-	/**
-	 * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
-	 *
-	 * Implementation keeps weak references to make the whole thing fast and efficient
-	 */
 	set	= new Set
 		..has	= (key) ->
 			key	= get_unique_key(key)
@@ -253,7 +253,10 @@ function ArraySet (array)
 			set.add(item)
 	set
 
-function Wrapper
+function Wrapper (detox-base-x)
+	# Same alphabet and format as in Bitcoin
+	base58	= detox-base-x('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz')
+
 	{
 		'random_bytes'					: random_bytes
 		'random_int'					: random_int
@@ -269,14 +272,16 @@ function Wrapper
 		'error_handler'					: error_handler
 		'ArrayMap'						: ArrayMap
 		'ArraySet'						: ArraySet
+		'base58_encode'					: base58['encode']
+		'base58_decode'					: base58['decode']
 	}
 
 if typeof define == 'function' && define['amd']
 	# AMD
-	define(Wrapper)
+	define(['@detox/base-x'], Wrapper)
 else if typeof exports == 'object'
 	# CommonJS
-	module.exports = Wrapper()
+	module.exports = Wrapper(require('@detox/base-x'))
 else
 	# Browser globals
-	@'detox_utils' = Wrapper()
+	@'detox_utils' = Wrapper(@'base_x')

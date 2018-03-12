@@ -7,7 +7,7 @@ lib		= require('..')
 test	= require('tape')
 
 test('Utils', (t) !->
-	t.plan(26)
+	t.plan(34)
 
 	random1 = lib.random_bytes(10)
 	random2 = lib.random_bytes(10)
@@ -59,6 +59,24 @@ test('Utils', (t) !->
 	set.add(u8_1)
 	t.ok(set.has(u8_1), 'ArraySet has item after addition')
 	t.ok(set.has(u8_2), 'ArraySet has item that is a different array, but with the same contents')
+
+	t.equal(lib.base58_encode(new Uint8Array(0)), '', 'Base-58 encoded empty string correctly')
+	t.equal(lib.base58_decode('').join(','), '', 'Base-58 decoded empty string correctly')
+
+	array	= Buffer.from('61', 'hex')
+	base58	= '2g'
+	t.equal(lib.base58_encode(array), base58, 'Base-58 encoded correctly #1')
+	t.equal(lib.base58_decode(base58).join(','), array.join(','), 'Base-58 decoded correctly #1')
+
+	array	= Buffer.from('626262', 'hex')
+	base58	= 'a3gV'
+	t.equal(lib.base58_encode(array), base58, 'Base-58 encoded correctly #2')
+	t.equal(lib.base58_decode(base58).join(','), array.join(','), 'Base-58 decoded correctly #2')
+
+	array	= Buffer.from('73696d706c792061206c6f6e6720737472696e67', 'hex')
+	base58	= '2cFupjhnEsSn59qHXstmK2ffpLv2'
+	t.equal(lib.base58_encode(array), base58, 'Base-58 encoded correctly #3')
+	t.equal(lib.base58_decode(base58).join(','), array.join(','), 'Base-58 decoded correctly #3')
 
 	x = 0
 	lib.timeoutSet(0.001, !->

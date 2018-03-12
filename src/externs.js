@@ -4,9 +4,10 @@
  * @license 0BSD
  */
 /**
+ * @param {Array} dependencies
  * @param {Function} wrapper
  */
-var define = function (wrapper) {};
+var define = function (dependencies, wrapper) {};
 /**
  * @param {string} module
  */
