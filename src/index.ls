@@ -203,8 +203,8 @@ function get_unique_key (key)
  *
  * Implementation keeps weak references to make the whole thing fast and efficient
  */
-function ArrayMap
-	new Map
+function ArrayMap (array)
+	map = new Map
 		..get = (key) ->
 			key	= get_unique_key(key)
 			Map::get.call(@, key)
@@ -224,6 +224,10 @@ function ArrayMap
 		..clear = !->
 			@forEach (, key) !~>
 				@delete(key)
+	if array
+		for [key, value] in array
+			map.set(key, value)
+	map
 # LiveScript doesn't support classes, so we do it in ugly way
 /**
  * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array

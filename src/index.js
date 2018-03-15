@@ -244,9 +244,9 @@
    *
    * Implementation keeps weak references to make the whole thing fast and efficient
    */
-  function ArrayMap(){
-    var x$;
-    x$ = new Map;
+  function ArrayMap(array){
+    var x$, map, i$, len$, ref$, key, value;
+    x$ = map = new Map;
     x$.get = function(key){
       key = get_unique_key(key);
       return Map.prototype.get.call(this, key);
@@ -275,7 +275,13 @@
         this$['delete'](key);
       });
     };
-    return x$;
+    if (array) {
+      for (i$ = 0, len$ = array.length; i$ < len$; ++i$) {
+        ref$ = array[i$], key = ref$[0], value = ref$[1];
+        map.set(key, value);
+      }
+    }
+    return map;
   }
   /**
    * This is a Set with very interesting property: different arrays with the same contents will be treated as the same array
