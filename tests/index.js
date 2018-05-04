@@ -9,8 +9,8 @@
   lib = require('..');
   test = require('tape');
   test('Utils', function(t){
-    var random1, random2, random_int1, random_int2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, map, u8_1, u8_2, set, base58, x, y, i1;
-    t.plan(34);
+    var random1, random2, random_int1, random_int2, sample1, sample2, array, random_item, hex_array, hex, string, string_array, array1, array2, arrays_result, concatenated, map, u8_1, u8_2, set, base58, x, y, i1;
+    t.plan(36);
     random1 = lib.random_bytes(10);
     random2 = lib.random_bytes(10);
     t.ok(random1 instanceof Uint8Array, 'Random bytes are in Uint8Array');
@@ -19,6 +19,10 @@
     random_int1 = lib.random_int(1, 999);
     random_int2 = lib.random_int(1, 999);
     t.notEqual(random_int1, random_int2, 'Random ints are random');
+    sample1 = lib.sample(500);
+    sample2 = lib.sample(500);
+    t.ok(sample1 >= 0, 'Sample is not negative');
+    t.notEqual(sample1, sample2, 'Samples are random');
     array = [1, 2, 3];
     random_item = lib.pull_random_item_from_array(array);
     t.equal(array.length, 2, 'Pulled item from array');

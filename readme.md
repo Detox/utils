@@ -25,6 +25,7 @@ requirejs(['@detox/utils'], function (detox_utils) {
 ## List of exported functions
 * `random_bytes()`
 * `random_int()`
+* `sample()`
 * `pull_random_item_from_array()`
 * `array2hex()`
 * `hex2array()`
