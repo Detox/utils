@@ -5,132 +5,7 @@
  * @license 0BSD
  */
 (function(){
-  var random_bytes, string2array, array2string, key_aliases, key_strings, key_usages;
-  if (typeof crypto !== 'undefined') {
-    /**
-     * @param {number} size
-     *
-     * @return {!Uint8Array}
-     */
-    random_bytes = function(size){
-      var array;
-      array = new Uint8Array(size);
-      crypto.getRandomValues(array);
-      return array;
-    };
-  } else {
-    /**
-     * @param {string} size
-     *
-     * @return {!Uint8Array}
-     */
-    random_bytes = require('crypto').randomBytes;
-  }
-  /**
-   * This function is the same as & operator, but supports full 53bit JavaScript numbers instead of just 32bit
-   *
-   * https://stackoverflow.com/a/43666199/3806795
-   *
-   * @param {number} number1
-   * @param {number} number2
-   *
-   * @return {number}
-   */
-  function bitwise_and(number1, number2){
-    var hi, low, hi1, hi2, low1, low2, hi_result, low_result;
-    hi = 0x80000000;
-    low = 0x7fffffff;
-    hi1 = ~~(number1 / hi);
-    hi2 = ~~(number2 / hi);
-    low1 = number1 & low;
-    low2 = number2 & low;
-    hi_result = hi1 & hi2;
-    low_result = low1 & low2;
-    return hi_result * hi + low_result;
-  }
-  /**
-   * https://github.com/EFForg/OpenWireless/blob/8075811b59bab6e4f4c79879e4787b24cdbb260d/app/js/diceware.js#L57
-   *
-   * @param {number} min
-   * @param {number} max
-   *
-   * @return {number}
-   */
-  function random_int(min, max){
-    var rval, range, bits_needed, bytes_needed, mask, bytes, p, i$, i;
-    rval = 0;
-    range = max - min;
-    bits_needed = Math.ceil(Math.log2(range));
-    bytes_needed = Math.ceil(bits_needed / 8);
-    mask = Math.pow(2, bits_needed) - 1;
-    bytes = random_bytes(bytes_needed);
-    p = (bytes_needed - 1) * 8;
-    for (i$ = 0; i$ < bytes_needed; ++i$) {
-      i = i$;
-      rval += bytes[i] * Math.pow(2, p);
-      p -= 8;
-    }
-    rval = bitwise_and(rval, mask);
-    if (rval >= range) {
-      return random_int(min, max);
-    }
-    return min + rval;
-  }
-  /**
-   * Generates exponentially distributed numbers that can be used for intervals between arrivals in Poisson process
-   *
-   * @param {number} mean
-   *
-   * @return {number}
-   */
-  function sample(mean){
-    return -Math.log(random_int(0, Number.MAX_SAFE_INTEGER - 1) / Number.MAX_SAFE_INTEGER) * mean;
-  }
-  /**
-   * @template T
-   *
-   * @param {!Array<T>} array Returned item will be removed from this array
-   *
-   * @return {T}
-   */
-  function pull_random_item_from_array(array){
-    var length, index;
-    length = array.length;
-    if (length === 1) {
-      return array.pop();
-    } else {
-      index = random_int(0, length - 1);
-      return array.splice(index, 1)[0];
-    }
-  }
-  /**
-   * @param {!Uint8Array} array
-   *
-   * @return {string}
-   */
-  function array2hex(array){
-    var string, i$, len$, byte;
-    string = '';
-    for (i$ = 0, len$ = array.length; i$ < len$; ++i$) {
-      byte = array[i$];
-      string += byte.toString(16).padStart(2, '0');
-    }
-    return string;
-  }
-  /**
-   * @param {string} string
-   *
-   * @return {!Uint8Array}
-   */
-  function hex2array(string){
-    var array, i$, to$, i;
-    array = new Uint8Array(string.length / 2);
-    for (i$ = 0, to$ = array.length; i$ < to$; ++i$) {
-      i = i$;
-      array[i] = parseInt(string.substring(i * 2, i * 2 + 2), 16);
-    }
-    return array;
-  }
+  var string2array, array2string, key_aliases, key_strings, key_usages;
   if (typeof Buffer !== 'undefined') {
     /**
      * @param {string} string
@@ -167,6 +42,34 @@
         return decoder.decode(array);
       };
     }.call(this, new TextEncoder(), new TextDecoder()));
+  }
+  /**
+   * @param {!Uint8Array} array
+   *
+   * @return {string}
+   */
+  function array2hex(array){
+    var string, i$, len$, byte;
+    string = '';
+    for (i$ = 0, len$ = array.length; i$ < len$; ++i$) {
+      byte = array[i$];
+      string += byte.toString(16).padStart(2, '0');
+    }
+    return string;
+  }
+  /**
+   * @param {string} string
+   *
+   * @return {!Uint8Array}
+   */
+  function hex2array(string){
+    var array, i$, to$, i;
+    array = new Uint8Array(string.length / 2);
+    for (i$ = 0, to$ = array.length; i$ < to$; ++i$) {
+      i = i$;
+      array[i] = parseInt(string.substring(i * 2, i * 2 + 2), 16);
+    }
+    return array;
   }
   /**
    * @param {!Uint8Array}	array1
@@ -371,8 +274,38 @@
     }
     return set;
   }
-  function Wrapper(detoxBaseX){
-    var base58;
+  function Wrapper(detoxBaseX, randomBytesNumbers){
+    var random_bytes, random_int, random, base58;
+    random_bytes = randomBytesNumbers['random_bytes'];
+    random_int = randomBytesNumbers['random_int'];
+    random = randomBytesNumbers['random'];
+    /**
+     * Generates exponentially distributed numbers that can be used for intervals between arrivals in Poisson process
+     *
+     * @param {number} mean
+     *
+     * @return {number}
+     */
+    function sample(mean){
+      return -Math.log(random()) * mean;
+    }
+    /**
+     * @template T
+     *
+     * @param {!Array<T>} array Returned item will be removed from this array
+     *
+     * @return {T}
+     */
+    function pull_random_item_from_array(array){
+      var length, index;
+      length = array.length;
+      if (length === 1) {
+        return array.pop();
+      } else {
+        index = random_int(0, length - 1);
+        return array.splice(index, 1)[0];
+      }
+    }
     base58 = detoxBaseX('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
     return {
       'random_bytes': random_bytes,
@@ -395,10 +328,10 @@
     };
   }
   if (typeof define === 'function' && define['amd']) {
-    define(['@detox/base-x'], Wrapper);
+    define(['@detox/base-x', 'random-bytes-numbers'], Wrapper);
   } else if (typeof exports === 'object') {
-    module.exports = Wrapper(require('@detox/base-x'));
+    module.exports = Wrapper(require('@detox/base-x'), require('random-bytes-numbers'));
   } else {
-    this['detox_utils'] = Wrapper(this['base_x']);
+    this['detox_utils'] = Wrapper(this['base_x'], this['random_bytes_numbers']);
   }
 }).call(this);

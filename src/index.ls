@@ -3,116 +3,6 @@
  * @author  Nazar Mokrynskyi <nazar@mokrynskyi.com>
  * @license 0BSD
  */
-if typeof crypto != 'undefined'
-	/**
-	 * @param {number} size
-	 *
-	 * @return {!Uint8Array}
-	 */
-	random_bytes	= (size) ->
-		array = new Uint8Array(size)
-		crypto.getRandomValues(array)
-		array
-else
-	/**
-	 * @param {string} size
-	 *
-	 * @return {!Uint8Array}
-	 */
-	random_bytes	= require('crypto').randomBytes
-/**
- * This function is the same as & operator, but supports full 53bit JavaScript numbers instead of just 32bit
- *
- * https://stackoverflow.com/a/43666199/3806795
- *
- * @param {number} number1
- * @param {number} number2
- *
- * @return {number}
- */
-function bitwise_and (number1, number2)
-	hi			= 0x80000000
-	low			= 0x7fffffff
-	hi1			= ~~(number1 / hi)
-	hi2			= ~~(number2 / hi)
-	low1		= number1 .&. low
-	low2		= number2 .&. low
-	hi_result	= hi1 .&. hi2
-	low_result	= low1 .&. low2
-	hi_result * hi + low_result
-/**
- * https://github.com/EFForg/OpenWireless/blob/8075811b59bab6e4f4c79879e4787b24cdbb260d/app/js/diceware.js#L57
- *
- * @param {number} min
- * @param {number} max
- *
- * @return {number}
- */
-function random_int (min, max)
-	rval			= 0
-	range			= max - min
-	bits_needed		= Math.ceil(Math.log2(range))
-	bytes_needed	= Math.ceil(bits_needed / 8)
-	mask			= 2**bits_needed - 1
-
-	bytes	= random_bytes(bytes_needed)
-	p		= (bytes_needed - 1) * 8
-	for i from 0 til bytes_needed
-		rval	+= bytes[i] * 2**p
-		p		-= 8
-
-	# Use & to apply the mask and reduce the number of recursive lookups
-	rval = bitwise_and(rval, mask)
-
-	if rval >= range
-		# Integer out of acceptable range
-		return random_int(min, max)
-	# Return an integer that falls within the range
-	min + rval
-/**
- * Generates exponentially distributed numbers that can be used for intervals between arrivals in Poisson process
- *
- * @param {number} mean
- *
- * @return {number}
- */
-function sample (mean)
-	-Math.log(random_int(0, Number.MAX_SAFE_INTEGER - 1) / Number.MAX_SAFE_INTEGER) * mean
-/**
- * @template T
- *
- * @param {!Array<T>} array Returned item will be removed from this array
- *
- * @return {T}
- */
-function pull_random_item_from_array (array)
-	length	= array.length
-	if length == 1
-		array.pop()
-	else
-		index	= random_int(0, length - 1)
-		array.splice(index, 1)[0]
-/**
- * @param {!Uint8Array} array
- *
- * @return {string}
- */
-function array2hex (array)
-	string = ''
-	for byte in array
-		string += byte.toString(16).padStart(2, '0')
-	string
-/**
- * @param {string} string
- *
- * @return {!Uint8Array}
- */
-function hex2array (string)
-	array	= new Uint8Array(string.length / 2)
-	for i from 0 til array.length
-		array[i] = parseInt(string.substring(i * 2, i * 2 + 2), 16)
-	array
-
 var string2array, array2string
 if typeof Buffer != 'undefined'
 	/**
@@ -144,6 +34,26 @@ else let encoder = new TextEncoder(), decoder = new TextDecoder()
 	 */
 	array2string := (array) ->
 		decoder.decode(array)
+/**
+ * @param {!Uint8Array} array
+ *
+ * @return {string}
+ */
+function array2hex (array)
+	string = ''
+	for byte in array
+		string += byte.toString(16).padStart(2, '0')
+	string
+/**
+ * @param {string} string
+ *
+ * @return {!Uint8Array}
+ */
+function hex2array (string)
+	array	= new Uint8Array(string.length / 2)
+	for i from 0 til array.length
+		array[i] = parseInt(string.substring(i * 2, i * 2 + 2), 16)
+	array
 /**
  * @param {!Uint8Array}	array1
  * @param {!Uint8Array}	array2
@@ -305,7 +215,34 @@ function ArraySet (array)
 			set.add(item)
 	set
 
-function Wrapper (detox-base-x)
+function Wrapper (detox-base-x, random-bytes-numbers)
+	random_bytes	= random-bytes-numbers['random_bytes']
+	random_int		= random-bytes-numbers['random_int']
+	random			= random-bytes-numbers['random']
+	/**
+	 * Generates exponentially distributed numbers that can be used for intervals between arrivals in Poisson process
+	 *
+	 * @param {number} mean
+	 *
+	 * @return {number}
+	 */
+	function sample (mean)
+		-Math.log(random()) * mean
+	/**
+	 * @template T
+	 *
+	 * @param {!Array<T>} array Returned item will be removed from this array
+	 *
+	 * @return {T}
+	 */
+	function pull_random_item_from_array (array)
+		length	= array.length
+		if length == 1
+			array.pop()
+		else
+			index	= random_int(0, length - 1)
+			array.splice(index, 1)[0]
+
 	# Same alphabet and format as in Bitcoin
 	base58	= detox-base-x('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz')
 
@@ -331,10 +268,10 @@ function Wrapper (detox-base-x)
 
 if typeof define == 'function' && define['amd']
 	# AMD
-	define(['@detox/base-x'], Wrapper)
+	define(['@detox/base-x', 'random-bytes-numbers'], Wrapper)
 else if typeof exports == 'object'
 	# CommonJS
-	module.exports = Wrapper(require('@detox/base-x'))
+	module.exports = Wrapper(require('@detox/base-x'), require('random-bytes-numbers'))
 else
 	# Browser globals
-	@'detox_utils' = Wrapper(@'base_x')
+	@'detox_utils' = Wrapper(@'base_x', @'random_bytes_numbers')

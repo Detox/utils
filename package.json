@@ -5,7 +5,7 @@
 		"detox",
 		"utils"
 	],
-	"version"         : "1.7.0",
+	"version"         : "1.8.0",
 	"homepage"        : "https://github.com/Detox/utils",
 	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
 	"repository"      : {
@@ -21,7 +21,8 @@
 		"test" : "tape tests/**/*.js"
 	},
 	"dependencies"    : {
-		"@detox/base-x" : "^3.0.4"
+		"@detox/base-x"        : "^3.0.4",
+		"random-bytes-numbers" : "^1.0.0"
 	},
 	"devDependencies" : {
 		"build-gc" : "^0.1.1",
