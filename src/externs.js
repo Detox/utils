@@ -16,12 +16,6 @@ var exports = {};
 var module = {};
 module.exports	= {};
 /**
- * @param {number} size
- *
- * @return {!Uint8Array}
- */
-crypto.randomBytes = function(size) {};
-/**
  * @constructor
  *
  * @extends {Uint8Array}
