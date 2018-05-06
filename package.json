@@ -5,7 +5,7 @@
 		"detox",
 		"utils"
 	],
-	"version"         : "1.8.0",
+	"version"         : "1.9.0",
 	"homepage"        : "https://github.com/Detox/utils",
 	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
 	"repository"      : {
@@ -22,6 +22,7 @@
 	},
 	"dependencies"    : {
 		"@detox/base-x"        : "^3.0.4",
+		"array-map-set"        : "^1.0.1",
 		"random-bytes-numbers" : "^1.0.0"
 	},
 	"devDependencies" : {
