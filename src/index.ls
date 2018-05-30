@@ -75,6 +75,8 @@ function are_arrays_equal (array1, array2)
  * @return {!Uint8Array}
  */
 function concat_arrays (arrays)
+	if &length > 1
+		return concat_arrays(Array.from(&))
 	total_length	= arrays.reduce(
 		(accumulator, array) ->
 			accumulator + array.length

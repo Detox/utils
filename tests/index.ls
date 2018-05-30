@@ -7,7 +7,7 @@ lib		= require('..')
 test	= require('tape')
 
 test('Utils', (t) !->
-	t.plan(36)
+	t.plan(39)
 
 	random1 = lib.random_bytes(10)
 	random2 = lib.random_bytes(10)
@@ -45,9 +45,14 @@ test('Utils', (t) !->
 	array2			= Uint8Array.of(3, 4)
 	arrays_result	= Uint8Array.of(1, 2, 3, 4)
 	concatenated	= lib.concat_arrays([array1, array2])
-	t.equal(concatenated.length, 4, 'Concatenated array has expected length')
-	t.ok(concatenated instanceof Uint8Array, 'Concatenated array is Uint8Array')
-	t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents')
+	t.equal(concatenated.length, 4, 'Concatenated array has expected length #1')
+	t.ok(concatenated instanceof Uint8Array, 'Concatenated array is Uint8Array #1')
+	t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents #1')
+
+	concatenated	= lib.concat_arrays(array1, array2)
+	t.equal(concatenated.length, 4, 'Concatenated array has expected length #2')
+	t.ok(concatenated instanceof Uint8Array, 'Concatenated array is Uint8Array #2')
+	t.equal(concatenated.join(','), arrays_result.join(','), 'Concatenated array has expected contents #2')
 
 	map		= lib.ArrayMap()
 	u8_1	= Uint8Array.of(1, 2, 3)

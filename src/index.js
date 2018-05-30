@@ -101,6 +101,9 @@
    */
   function concat_arrays(arrays){
     var total_length, current_offset, result, i$, len$, array;
+    if (arguments.length > 1) {
+      return concat_arrays(Array.from(arguments));
+    }
     total_length = arrays.reduce(function(accumulator, array){
       return accumulator + array.length;
     }, 0);
